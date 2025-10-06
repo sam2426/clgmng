@@ -21,7 +21,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/college?schema=public
       - NODE_ENV=production
     ports:
-      - "3000:3000"
+      - "3456:3456"
     volumes:
       - .:/app               # Mount your code
       - /app/node_modules    # Prevent overwriting node_modules

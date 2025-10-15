@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: college-mgmt-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-app #the selector is used to find the pods to be managed by the deployment. it has to match the labels in the template.
+  template:
+    metadata:
+      labels:
+        app: test-app #Both key and value are random identifiers, can be anything
+    spec:
+      containers:
+        - name: test-node # name can be anything.
+          image: sam2426/clg-mngmt

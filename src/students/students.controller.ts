@@ -16,6 +16,12 @@ export class StudentsController {
     return this.studentsService.findAll();
   }
 
+  @Get('view')
+  view() {
+    return '<h1>Hello World</h1>';
+
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.studentsService.findOne(id);

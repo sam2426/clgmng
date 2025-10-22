@@ -27,5 +27,5 @@ spec:
     spec:
       containers:
         - name: test-node # name can be anything.
-          image: sam2426/clg-mngmt
+          image: sam2426/clg-mngmt:3
           imagePullPolicy: Always

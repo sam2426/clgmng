@@ -11,6 +11,14 @@ spec:
       targetPort: 3456
   type: LoadBalancer
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DATABASE_URL: "postgresql://postgres:postgres@postgres-service:5432/college?schema=public"
+  NODE_ENV: "production"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +33,36 @@ spec:
       labels:
         app: test-app #Both key and value are random identifiers, can be anything
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.35
+          command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo waiting for postgres; sleep 2; done;']
       containers:
         - name: test-node # name can be anything.
           image: sam2426/clg-mngmt:3
           imagePullPolicy: Always
+          ports:
+            - containerPort: 3456
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_URL
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NODE_ENV
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Waiting for database to be ready..."
+              echo "Building application..."
+              npm run build
+              echo "Running database migrations..."
+              npx prisma migrate deploy
+              echo "Seeding database..."
+              npx prisma db seed
+              echo "Starting application..."
+              npm run start:dev

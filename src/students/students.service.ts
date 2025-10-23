@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import type { LoggerService } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { customStringify } from 'src/helpers/utility.helper';
 
 export interface CreateStudentDto {
   firstName: string;
@@ -15,14 +18,17 @@ export interface UpdateStudentDto {
 
 @Injectable()
 export class StudentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(WINSTON_MODULE_NEST_PROVIDER)
+  private readonly logger: LoggerService, private readonly prisma: PrismaService) {}
 
   create(data: CreateStudentDto) {
     return this.prisma.student.create({ data });
   }
 
-  findAll() {
-    return this.prisma.student.findMany();
+  async findAll() {
+    const students = await this.prisma.student.findMany();
+    this.logger.log({label: 'StudentsService', message: `Students fetched successfully: ${customStringify(students)}`});
+    return students;
   }
 
   findOne(id: string) {

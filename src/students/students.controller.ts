@@ -18,7 +18,7 @@ export class StudentsController {
 
   @Get('view')
   view() {
-    return '<h1>Hello World</h1>';
+    return '<h1>Hello World!! holla!</h1>';
 
   }
 
